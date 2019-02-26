@@ -1,15 +1,16 @@
 package com.example.gpsapp;
 
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
     static final String ALARM_SWITCH = "alarmSwitch";
     SharedPreferences sharedPreferences;
 
- //   String phone = "0535683835";
- //   String phone = "0523490177";
+    //   String phone = "0535683835";
+    //   String phone = "0523490177";
     String phone = "0535683835";
     String phoneX;
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         phoneText = findViewById(R.id.phone);
         setPhonex();
 
-        sharedPreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
 
         setAlarmStatus();
 
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked == true) {
                     setAlarmOn();
-                    Toast.makeText(getBaseContext(),"Alarm On",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Alarm On", Toast.LENGTH_SHORT).show();
                 } else {
                     setAlarmOff();
                 }
@@ -59,15 +60,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     ////// INNER METHODS /////
-
-    public void setAlarmStatusView (View view) {
-        setAlarmStatus();
-    }
-
-
-
 
     public void setAlarmOn() {
         smsManager.sendTextMessage(phone, null, "shock123456", null, null);
@@ -75,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         saveAlarmStatus();
 
     }
+
     public void setAlarmOff() {
         smsManager.sendTextMessage(phone, null, "noshock123456", null, null);
         setTextView(false);
@@ -86,24 +80,35 @@ public class MainActivity extends AppCompatActivity {
         phoneText.setText("Phone: " + phone);
     }
 
-    public void saveAlarmStatus(){
+    public void saveAlarmStatus() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(ALARM_SWITCH,aSwitch.isChecked()).commit();
+        editor.putBoolean(ALARM_SWITCH, aSwitch.isChecked()).commit();
     }
 
     public void setAlarmStatus() {
-        aSwitch.setChecked(sharedPreferences.getBoolean(ALARM_SWITCH,false));
+        aSwitch.setChecked(sharedPreferences.getBoolean(ALARM_SWITCH, false));
         setTextView(aSwitch.isChecked());
     }
 
     public void setTextView(boolean status) {
         if (status == true) {
             textView.setText("Alarm is on");
-        }
-        else {
+        } else {
             textView.setText("Alarm is off");
         }
     }
+
+    public void startAlert(View view) {
+        Toast.makeText(this, "Alarm on", Toast.LENGTH_LONG).show();
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+
+        AudioManager mobilemode = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        mobilemode.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        mobilemode.setStreamVolume(AudioManager.STREAM_RING,mobilemode.getStreamMaxVolume(AudioManager.STREAM_RING),0);
+        r.play();
+    }
+
 
 
 }

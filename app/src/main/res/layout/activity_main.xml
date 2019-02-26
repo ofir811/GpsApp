@@ -34,12 +34,12 @@
             android:layout_marginRight="20sp"
             android:text="Alarm is off" />
 
-        <!--<Button-->
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10sp"
-            android:text="refresh"
-            android:onClick="setAlarmStatusView"/>
+            android:text="alarm"
+            android:onClick="startAlert"/>
 
     </LinearLayout>
 
