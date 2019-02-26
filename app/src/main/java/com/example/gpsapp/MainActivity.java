@@ -1,15 +1,19 @@
 package com.example.gpsapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
-import android.view.View;
+import android.telephony.SmsMessage;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -26,10 +30,28 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
 
     //   String phone = "0535683835";
-    //   String phone = "0523490177";
+    //   String phone = "0545771988";
     String phone = "0535683835";
     String phoneX;
+    public BroadcastReceiver smsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //Toast.makeText(context, "not found", Toast.LENGTH_SHORT).show();
 
+            if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
+                for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
+                    if (smsMessage.getOriginatingAddress().equals(phoneX)) {
+                        String messageBody = smsMessage.getMessageBody();
+                        if (messageBody.contains("alarm")) {
+                            startAlert();
+                        }
+
+                    }
+
+                }
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
 
         setAlarmStatus();
+
+        registerReceiver(smsReceiver,new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION));
 
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -98,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void startAlert(View view) {
+    public void startAlert() {
         Toast.makeText(this, "Alarm on", Toast.LENGTH_LONG).show();
         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
@@ -111,7 +135,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
 }
+
+
+
  /*
      public void setAlarmStatus(){
 

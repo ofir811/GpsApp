@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10sp"
             android:text="alarm"
-            android:onClick="startAlert"/>
+            />
 
     </LinearLayout>
 
