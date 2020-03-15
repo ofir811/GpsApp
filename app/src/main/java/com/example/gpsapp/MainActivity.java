@@ -10,14 +10,20 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.Telephony;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,13 +31,15 @@ public class MainActivity extends AppCompatActivity {
     private Switch aSwitch;
     private TextView textView;
     private TextView phoneText;
+    private TextInputEditText editText;
     static final String SHARED_PREFS = "sharedPrefs";
     static final String ALARM_SWITCH = "alarmSwitch";
     SharedPreferences sharedPreferences;
+    Ringtone r;
 
     //   String phone = "0535683835";
     //   String phone = "0545771988";
-    String phone = "0535683835";
+    String phone = "0533900375";
     String phoneX;
     public BroadcastReceiver smsReceiver = new BroadcastReceiver() {
         @Override
@@ -59,7 +67,9 @@ public class MainActivity extends AppCompatActivity {
         aSwitch = findViewById(R.id.alarm);
         textView = findViewById(R.id.status);
         phoneText = findViewById(R.id.phone);
+        phoneText.setText(phone);
         setPhonex();
+        editText = findViewById(R.id.editnum);
 
         sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
 
@@ -91,6 +101,33 @@ public class MainActivity extends AppCompatActivity {
         setTextView(true);
         saveAlarmStatus();
 
+    }
+    public void editNum(View view) {
+        phone = editText.getEditableText().toString();
+        phoneText.setText(phone);
+        setPhonex();
+        unregisterReceiver(smsReceiver);
+        smsReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //Toast.makeText(context, "not found", Toast.LENGTH_SHORT).show();
+
+                if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
+                    for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
+                        if (smsMessage.getOriginatingAddress().equals(phoneX)) {
+                            String messageBody = smsMessage.getMessageBody();
+                            if (messageBody.contains("alarm")) {
+                                startAlert();
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        };
+        registerReceiver(smsReceiver,new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION));
+        Toast.makeText(getBaseContext(), "phone change to " + phone, Toast.LENGTH_SHORT).show();
     }
 
     public void setAlarmOff() {
@@ -125,12 +162,20 @@ public class MainActivity extends AppCompatActivity {
     public void startAlert() {
         Toast.makeText(this, "Alarm on", Toast.LENGTH_LONG).show();
         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        r = RingtoneManager.getRingtone(getApplicationContext(), notification);
 
         AudioManager mobilemode = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         mobilemode.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         mobilemode.setStreamVolume(AudioManager.STREAM_RING,mobilemode.getStreamMaxVolume(AudioManager.STREAM_RING),0);
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(VibrationEffect.createOneShot(3000, VibrationEffect.DEFAULT_AMPLITUDE));
+        r.setLooping(true);
         r.play();
+    }
+
+    public void stopAlert(View view) {
+
+        r.stop();
     }
 
 

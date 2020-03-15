@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingLeft="15sp"
-    android:paddingTop="40sp"
 
+    android:paddingTop="40sp"
     tools:context=".MainActivity">
 
     <Switch
@@ -19,18 +19,13 @@
         android:text="Alarm" />
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10sp"
-        android:orientation="horizontal">
 
-
-        <TextView
+    <TextView
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0sp"
+            android:layout_marginTop="5sp"
+            android:textSize="30dp"
             android:layout_marginRight="20sp"
             android:text="Alarm is off" />
 
@@ -38,18 +33,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10sp"
-            android:text="alarm"
-            />
-
-    </LinearLayout>
+            android:layout_marginTop="20sp"
+            android:text="stop alarm"
+            android:onClick="stopAlert"/>
 
     <TextView
         android:id="@+id/phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70sp"
+        android:layout_marginTop="10sp"
+        android:textSize="20dp"
         android:layout_marginRight="20sp"
         android:text="" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/editnum"
+        android:layout_width="215dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40sp"
+        android:hint="change num" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="95dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1sp"
+        android:layout_marginRight="10sp"
+        android:onClick="editNum"
+        android:text="save edit" />
 
 
 </LinearLayout>
